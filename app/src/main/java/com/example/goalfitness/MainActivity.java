@@ -3,19 +3,31 @@ package com.example.goalfitness;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.Dialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.location.LocationManager;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RelativeLayout;
+import android.widget.Toast;
 
 
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.snackbar.Snackbar;
@@ -27,17 +39,18 @@ import com.google.firebase.database.FirebaseDatabase;
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.example.goalfitness.Constants.ERROR_DIALOG_REQUEST;
+import static com.example.goalfitness.Constants.PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION;
+import static com.example.goalfitness.Constants.PERMISSIONS_REQUEST_ENABLE_GPS;
+
 public class MainActivity extends AppCompatActivity {
     Button btnCustomer, btnPt;
     Button btnLogin, btnRegister;
     RelativeLayout rootLayout;
-
-    //EditText tEmail, tPassword;
+    boolean LocationPermissionGranted = false;
+    private static final String TAG = "MainActivity";
 
     FirebaseAuth Auth;
-    //FirebaseDatabase db;
-    //DatabaseReference users_refer;
-    //FirebaseAuth.AuthStateListener firebaseAuthListener;
 
     @SuppressLint("WrongViewCast")
     @Override
@@ -45,32 +58,11 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        //Auth = FirebaseAuth.getInstance();
-        //db = FirebaseDatabase.getInstance();
-
-
         Auth = FirebaseAuth.getInstance();
-        //firebaseAuthListener = new FirebaseAuth.AuthStateListener() {
-        //    @Override
-        //    public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
-        //        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        //        if (user != null) {
-        //            Intent intent = new Intent(MainActivity.this, Welcome.class);
-        //            startActivity(intent);
-        //            finish();
-        //            return;
-        //        }
-
-        //    }
-        //};
 
         btnCustomer = (Button)findViewById(R.id.Customer);
         btnPt = (Button)findViewById(R.id.Pt);
         rootLayout = (RelativeLayout) findViewById(R.id.rootLayout);
-
-
-
-
 
         btnCustomer.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -78,7 +70,6 @@ public class MainActivity extends AppCompatActivity {
                 showC_LoginDialog();
             }
         });
-
         btnPt.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -86,7 +77,108 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+    }
+    // check permission for the Map services
+    private boolean checkMapServices(){
+        if(isServicesOK()){ // google service
+            if(MapsEnabled()){ //map service
+                return true;
+            }
+        }
+        return false;
+    }
 
+    public void DialogEnableGPS() {
+        final AlertDialog.Builder Dialog = new AlertDialog.Builder(this);
+        Dialog.setMessage("This application need GPS to work, please enable it?")
+                .setCancelable(false)
+                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    public void onClick(@SuppressWarnings("unused") final DialogInterface dialog, @SuppressWarnings("unused") final int id) {
+                        Intent enableGpsIntent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+                        startActivityForResult(enableGpsIntent, PERMISSIONS_REQUEST_ENABLE_GPS);
+                    }
+                });
+        final AlertDialog alert = Dialog.create();
+        alert.show();
+    }
+
+    public boolean MapsEnabled(){
+        final LocationManager manager = (LocationManager) getSystemService( Context.LOCATION_SERVICE );
+
+        if ( !manager.isProviderEnabled( LocationManager.GPS_PROVIDER ) ) {
+            DialogEnableGPS();
+            return false;
+        }
+        return true;
+    }
+
+    private void getLocationPermission() {
+        /*
+         * Request location permission, so that we can get the location of the
+         * device. The result of the permission request is handled by a callback,
+         * onRequestPermissionsResult.
+         */
+        if (ContextCompat.checkSelfPermission(this.getApplicationContext(),
+                Manifest.permission.ACCESS_FINE_LOCATION)
+                == PackageManager.PERMISSION_GRANTED) {
+            LocationPermissionGranted = true;
+        } else {
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                    PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
+        }
+    }
+
+    public boolean isServicesOK(){
+        Log.d(TAG, "isServicesOK: checking google services version");
+
+        int available = GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(MainActivity.this);
+
+        if(available == ConnectionResult.SUCCESS){
+            //everything is fine and the user can make map requests
+            Log.d(TAG, "isServicesOK: Google Play Services is working");
+            return true;
+        }
+        else if(GoogleApiAvailability.getInstance().isUserResolvableError(available)){
+            //an error occured but we can resolve it
+            Log.d(TAG, "isServicesOK: an error occured but we can fix it");
+            Dialog dialog = GoogleApiAvailability.getInstance().getErrorDialog(MainActivity.this, available, ERROR_DIALOG_REQUEST);
+            dialog.show();
+        }else{
+            Toast.makeText(this, "You can't make map requests", Toast.LENGTH_SHORT).show();
+        }
+        return false;
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           @NonNull String permissions[],
+                                           @NonNull int[] grantResults) {
+        LocationPermissionGranted = false;
+        switch (requestCode) {
+            case PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION: {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    LocationPermissionGranted = true;
+                }
+            }
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        Log.d(TAG, "onActivityResult: called.");
+        switch (requestCode) {
+            case PERMISSIONS_REQUEST_ENABLE_GPS: {
+                if(LocationPermissionGranted){
+                }
+                else{
+                    getLocationPermission();
+                }
+            }
+        }
 
     }
     public void showC_LoginDialog(){
@@ -259,11 +351,7 @@ public class MainActivity extends AppCompatActivity {
                 Auth.createUserWithEmailAndPassword(Email, Password) .addOnSuccessListener(new OnSuccessListener<AuthResult>() {
                     @Override
                     public void onSuccess(AuthResult authResult) {
-                        //Users_local user = new Users_local();
-                        //user.setEmail(Email);
-                        //user.setName(Name);
-                        //user.setPassword(Password);
-                        //user.setPhone(Phone);
+
                         String user_id = Auth.getCurrentUser().getUid();
                         DatabaseReference current_user_db = FirebaseDatabase.getInstance().getReference().child("Users").child("Customers").child(user_id);
 
@@ -290,25 +378,6 @@ public class MainActivity extends AppCompatActivity {
                                     }
                                 });
 
-
-                        //users_refer = db.getReference().child("Users").child("Customers").child(String.valueOf(users_refer));
-                        //users_refer.child(Auth.getCurrentUser().getUid())
-                        //        .setValue(user)
-                        //        .addOnSuccessListener(new OnSuccessListener<Void>() {
-                        //            @Override
-                        //           public void onSuccess(Void aVoid) {
-                        //               Snackbar.make(rootLayout, "Register success", Snackbar.LENGTH_SHORT)
-                        //                        .show();
-                                  //  }
-                                //});
-                        //users_refer = FirebaseAuth.getInstance().getCurrentUser().getUid();
-
-                        //FirebaseAuth.getInstance().getCurrentUser().getUid()
-                        //db.getReference().child("Users").child("Customer").child(users_refer);
-
-
-
-
                     }
                 });
 
@@ -329,7 +398,6 @@ public class MainActivity extends AppCompatActivity {
 
 
     }
-
     private void showPT_RegisterDialog(){
         AlertDialog.Builder dialog = new AlertDialog.Builder(this);
         dialog.setTitle("Welcome to Goal fitness");
@@ -382,11 +450,7 @@ public class MainActivity extends AppCompatActivity {
                 Auth.createUserWithEmailAndPassword(Email, Password) .addOnSuccessListener(new OnSuccessListener<AuthResult>() {
                     @Override
                     public void onSuccess(AuthResult authResult) {
-                        //Users_local user = new Users_local();
-                        //user.setEmail(Email);
-                        //user.setName(Name);
-                        //user.setPassword(Password);
-                        //user.setPhone(Phone);
+
                         String user_id = Auth.getCurrentUser().getUid();
                         DatabaseReference current_user_db = FirebaseDatabase.getInstance().getReference().child("Users").child("Personal trainer").child(user_id);
 
@@ -414,24 +478,6 @@ public class MainActivity extends AppCompatActivity {
                                 });
 
 
-                        //users_refer = db.getReference().child("Users").child("Customers").child(String.valueOf(users_refer));
-                        //users_refer.child(Auth.getCurrentUser().getUid())
-                        //        .setValue(user)
-                        //        .addOnSuccessListener(new OnSuccessListener<Void>() {
-                        //            @Override
-                        //           public void onSuccess(Void aVoid) {
-                        //               Snackbar.make(rootLayout, "Register success", Snackbar.LENGTH_SHORT)
-                        //                        .show();
-                        //  }
-                        //});
-                        //users_refer = FirebaseAuth.getInstance().getCurrentUser().getUid();
-
-                        //FirebaseAuth.getInstance().getCurrentUser().getUid()
-                        //db.getReference().child("Users").child("Customer").child(users_refer);
-
-
-
-
                     }
                 });
 
@@ -451,6 +497,17 @@ public class MainActivity extends AppCompatActivity {
 
 
 
+    }
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if(checkMapServices()){
+            if(LocationPermissionGranted){
+            }
+            else{
+                getLocationPermission();
+            }
+        }
     }
 
 }

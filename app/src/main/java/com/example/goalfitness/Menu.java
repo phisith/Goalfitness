@@ -33,7 +33,7 @@ public class Menu extends AppCompatActivity {
                     break;
 
                 case R.id.chat_btn:
-                    selected = new chat();
+                    selected = new Chat();
                     break;
 
                 case R.id.profile_btn:

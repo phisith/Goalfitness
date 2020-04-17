@@ -1,4 +1,5 @@
 <resources>
+    <string name="google_map_api_key">AIzaSyCsjsuUNXSIeiDnZOwzQRVbmkra7T8Cm6w</string>
 
 
     <string name="email_login">Email</string>
