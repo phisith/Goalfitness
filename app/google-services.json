@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "562805889712",
+    "firebase_url": "https://goal-fitness.firebaseio.com",
+    "project_id": "goal-fitness",
+    "storage_bucket": "goal-fitness.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:562805889712:android:68faf26ec7fa140d5db975",
+        "android_client_info": {
+          "package_name": "com.example.goalfitness"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "562805889712-0dtqbh32rjja3s4keenjq2rkcb1mv2ru.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.goalfitness",
+            "certificate_hash": "bb086d9d98afc0430f4b4abbab5cb652e092e17c"
+          }
+        },
+        {
+          "client_id": "562805889712-jdlkup9bornmou1lcc63rm1er73cb55q.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAc55X2qhyXaUA6-KwoIgw1ZRBe7cYVe1o"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "562805889712-jdlkup9bornmou1lcc63rm1er73cb55q.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
