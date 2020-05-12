@@ -13,6 +13,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.provider.Settings;
@@ -26,10 +27,20 @@ import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 
+//import com.firebase.geofire.GeoFire;
+//import com.firebase.geofire.GeoLocation;
+import com.example.goalfitness.Model.Customer_Register;
+import com.firebase.geofire.GeoFire;
+import com.firebase.geofire.GeoLocation;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
@@ -45,11 +56,11 @@ import static com.example.goalfitness.Constants.PERMISSIONS_REQUEST_ENABLE_GPS;
 
 public class MainActivity extends AppCompatActivity {
     Button btnCustomer, btnPt;
-    Button btnLogin, btnRegister;
     RelativeLayout rootLayout;
     boolean LocationPermissionGranted = false;
     private static final String TAG = "MainActivity";
-
+    private FusedLocationProviderClient mFusedLocationProvider;
+    private LocationRequest mLocationRequest;
     FirebaseAuth Auth;
 
     @SuppressLint("WrongViewCast")
@@ -77,7 +88,31 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        mFusedLocationProvider = LocationServices.getFusedLocationProviderClient(this);
+
+
     }
+
+    private void updateLastKnowLocation(){
+        mFusedLocationProvider.getLastLocation().addOnCompleteListener(new OnCompleteListener<Location>() {
+            @Override
+            public void onComplete(@NonNull Task<Location> task) {
+                if(task.isSuccessful()){
+                    Location location = task.getResult();
+
+                    String userID = Auth.getCurrentUser().getUid();
+                    DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("Users").child("Customers").child(userID);
+
+                    GeoFire geoFire = new GeoFire(ref);
+                    geoFire.setLocation(userID, new GeoLocation(location.getLatitude(),location.getLongitude()));
+                }
+            }
+        });
+    }
+
+
+
+
     // check permission for the Map services
     private boolean checkMapServices(){
         if(isServicesOK()){ // google service
@@ -122,6 +157,7 @@ public class MainActivity extends AppCompatActivity {
                 Manifest.permission.ACCESS_FINE_LOCATION)
                 == PackageManager.PERMISSION_GRANTED) {
             LocationPermissionGranted = true;
+            updateLastKnowLocation();
         } else {
             ActivityCompat.requestPermissions(this,
                     new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
@@ -173,6 +209,7 @@ public class MainActivity extends AppCompatActivity {
         switch (requestCode) {
             case PERMISSIONS_REQUEST_ENABLE_GPS: {
                 if(LocationPermissionGranted){
+                    updateLastKnowLocation();
                 }
                 else{
                     getLocationPermission();
@@ -353,15 +390,15 @@ public class MainActivity extends AppCompatActivity {
                     public void onSuccess(AuthResult authResult) {
 
                         String user_id = Auth.getCurrentUser().getUid();
-                        DatabaseReference current_user_db = FirebaseDatabase.getInstance().getReference().child("Users").child("Customers").child(user_id);
 
-                        Map newPost = new HashMap();
-                        newPost.put("Email", Email);
-                        newPost.put("Name", Name);
-                        newPost.put("Password", Password);
-                        newPost.put("Phone", Phone);
+                        Customer_Register mCustomer_R = new Customer_Register();
+                        mCustomer_R.setEmail(tEmail.getText().toString());
+                        mCustomer_R.setName(tName.getText().toString());
+                        mCustomer_R.setPasssword(tPassword.getText().toString());
+                        mCustomer_R.setPhone(tPhone.getText().toString());
 
-                        current_user_db.setValue(newPost)
+                        Task<Void> current_user_db = FirebaseDatabase.getInstance().getReference().child("Users").child("Customers").child(user_id)
+                                .setValue(mCustomer_R)
                                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                                     @Override
                                     public void onSuccess(Void aVoid) {
@@ -452,15 +489,16 @@ public class MainActivity extends AppCompatActivity {
                     public void onSuccess(AuthResult authResult) {
 
                         String user_id = Auth.getCurrentUser().getUid();
-                        DatabaseReference current_user_db = FirebaseDatabase.getInstance().getReference().child("Users").child("Personal trainer").child(user_id);
 
-                        Map newPost = new HashMap();
-                        newPost.put("Email", Email);
-                        newPost.put("Name", Name);
-                        newPost.put("Password", Password);
-                        newPost.put("Phone", Phone);
 
-                        current_user_db.setValue(newPost)
+                        Customer_Register mPT_R = new Customer_Register();
+                        mPT_R.setEmail(tEmail.getText().toString());
+                        mPT_R.setName(tName.getText().toString());
+                        mPT_R.setPasssword(tPassword.getText().toString());
+                        mPT_R.setPhone(tPhone.getText().toString());
+
+                        Task<Void> current_user_db = FirebaseDatabase.getInstance().getReference().child("Users").child("Personal trainer").child(user_id)
+                                .setValue(mPT_R)
                                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                                     @Override
                                     public void onSuccess(Void aVoid) {
@@ -503,6 +541,7 @@ public class MainActivity extends AppCompatActivity {
         super.onResume();
         if(checkMapServices()){
             if(LocationPermissionGranted){
+                updateLastKnowLocation();
             }
             else{
                 getLocationPermission();
