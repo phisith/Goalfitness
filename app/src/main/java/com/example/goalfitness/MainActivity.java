@@ -13,7 +13,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.provider.Settings;
@@ -24,44 +23,44 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 
 //import com.firebase.geofire.GeoFire;
 //import com.firebase.geofire.GeoLocation;
 import com.example.goalfitness.Model.Customer_Register;
-import com.firebase.geofire.GeoFire;
-import com.firebase.geofire.GeoLocation;
+import com.example.goalfitness.Model.ToDo;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
-import java.util.HashMap;
-import java.util.Map;
+import de.hdodenhof.circleimageview.CircleImageView;
 
 import static com.example.goalfitness.Constants.ERROR_DIALOG_REQUEST;
 import static com.example.goalfitness.Constants.PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION;
 import static com.example.goalfitness.Constants.PERMISSIONS_REQUEST_ENABLE_GPS;
 
 public class MainActivity extends AppCompatActivity {
-    Button btnCustomer, btnPt;
+    Button btnCustomer, btnPt, video;
     RelativeLayout rootLayout;
     boolean LocationPermissionGranted = false;
     private static final String TAG = "MainActivity";
     private FusedLocationProviderClient mFusedLocationProvider;
     private LocationRequest mLocationRequest;
     FirebaseAuth Auth;
+    CircleImageView profile_pic;
+    TextView username;
+
 
     @SuppressLint("WrongViewCast")
     @Override
@@ -74,6 +73,7 @@ public class MainActivity extends AppCompatActivity {
         btnCustomer = (Button)findViewById(R.id.Customer);
         btnPt = (Button)findViewById(R.id.Pt);
         rootLayout = (RelativeLayout) findViewById(R.id.rootLayout);
+        video = (Button) findViewById(R.id.vdo);
 
         btnCustomer.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -88,29 +88,25 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        video.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                openvdo();
+            }
+        });
+
         mFusedLocationProvider = LocationServices.getFusedLocationProviderClient(this);
 
 
+
+
+
     }
 
-    private void updateLastKnowLocation(){
-        mFusedLocationProvider.getLastLocation().addOnCompleteListener(new OnCompleteListener<Location>() {
-            @Override
-            public void onComplete(@NonNull Task<Location> task) {
-                if(task.isSuccessful()){
-                    Location location = task.getResult();
-
-                    String userID = Auth.getCurrentUser().getUid();
-                    DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("Users").child("Customers").child(userID);
-
-                    GeoFire geoFire = new GeoFire(ref);
-                    geoFire.setLocation(userID, new GeoLocation(location.getLatitude(),location.getLongitude()));
-                }
-            }
-        });
+    private void openvdo() {
+        Intent intent = new Intent(this, TodoActivity.class);
+        startActivity(intent);
     }
-
-
 
 
     // check permission for the Map services
@@ -157,7 +153,7 @@ public class MainActivity extends AppCompatActivity {
                 Manifest.permission.ACCESS_FINE_LOCATION)
                 == PackageManager.PERMISSION_GRANTED) {
             LocationPermissionGranted = true;
-            updateLastKnowLocation();
+            //updateLastKnowLocation();
         } else {
             ActivityCompat.requestPermissions(this,
                     new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
@@ -209,7 +205,7 @@ public class MainActivity extends AppCompatActivity {
         switch (requestCode) {
             case PERMISSIONS_REQUEST_ENABLE_GPS: {
                 if(LocationPermissionGranted){
-                    updateLastKnowLocation();
+                    //updateLastKnowLocation();
                 }
                 else{
                     getLocationPermission();
@@ -254,7 +250,7 @@ public class MainActivity extends AppCompatActivity {
                 Auth.signInWithEmailAndPassword(Email,Password).addOnSuccessListener(new OnSuccessListener<AuthResult>() {
                     @Override
                     public void onSuccess(AuthResult authResult) {
-                        startActivity(new Intent(MainActivity.this, Menu.class));
+                        startActivity(new Intent(MainActivity.this, Start.class));
                         finish();
                     }
                 });
@@ -311,7 +307,7 @@ public class MainActivity extends AppCompatActivity {
                 Auth.signInWithEmailAndPassword(Email,Password).addOnSuccessListener(new OnSuccessListener<AuthResult>() {
                     @Override
                     public void onSuccess(AuthResult authResult) {
-                        startActivity(new Intent(MainActivity.this, Menu.class));
+                        startActivity(new Intent(MainActivity.this, Profile_PT.class));
                         finish();
                     }
                 });
@@ -336,7 +332,7 @@ public class MainActivity extends AppCompatActivity {
 
 
 
-    private void showC_RegisterDialog(){
+    public void showC_RegisterDialog(){
         AlertDialog.Builder dialog = new AlertDialog.Builder(this);
         dialog.setTitle("Welcome to Goal fitness");
         dialog.setMessage("Please use your email to register");
@@ -389,15 +385,18 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onSuccess(AuthResult authResult) {
 
-                        String user_id = Auth.getCurrentUser().getUid();
-
+                        String userid = Auth.getCurrentUser().getUid();
                         Customer_Register mCustomer_R = new Customer_Register();
+                        mCustomer_R.setId(userid);
                         mCustomer_R.setEmail(tEmail.getText().toString());
                         mCustomer_R.setName(tName.getText().toString());
                         mCustomer_R.setPasssword(tPassword.getText().toString());
                         mCustomer_R.setPhone(tPhone.getText().toString());
+                        mCustomer_R.setImageURL("default");
+                        mCustomer_R.setSearch(tName.getText().toString().toLowerCase());
+                        mCustomer_R.setBios("");
 
-                        Task<Void> current_user_db = FirebaseDatabase.getInstance().getReference().child("Users").child("Customers").child(user_id)
+                        Task<Void> current_user_db = FirebaseDatabase.getInstance().getReference().child("Users").child("Customers").child(userid)
                                 .setValue(mCustomer_R)
                                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                                     @Override
@@ -435,7 +434,7 @@ public class MainActivity extends AppCompatActivity {
 
 
     }
-    private void showPT_RegisterDialog(){
+    public void showPT_RegisterDialog(){
         AlertDialog.Builder dialog = new AlertDialog.Builder(this);
         dialog.setTitle("Welcome to Goal fitness");
         dialog.setMessage("Please use your email to register");
@@ -488,16 +487,18 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onSuccess(AuthResult authResult) {
 
-                        String user_id = Auth.getCurrentUser().getUid();
+                        String userid = Auth.getCurrentUser().getUid();
 
 
                         Customer_Register mPT_R = new Customer_Register();
+                        mPT_R.setId(userid);
                         mPT_R.setEmail(tEmail.getText().toString());
                         mPT_R.setName(tName.getText().toString());
                         mPT_R.setPasssword(tPassword.getText().toString());
                         mPT_R.setPhone(tPhone.getText().toString());
+                        mPT_R.setImageURL("default");
 
-                        Task<Void> current_user_db = FirebaseDatabase.getInstance().getReference().child("Users").child("Personal trainer").child(user_id)
+                        Task<Void> current_user_db = FirebaseDatabase.getInstance().getReference().child("Users").child("Personal trainer").child(userid)
                                 .setValue(mPT_R)
                                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                                     @Override
@@ -541,7 +542,7 @@ public class MainActivity extends AppCompatActivity {
         super.onResume();
         if(checkMapServices()){
             if(LocationPermissionGranted){
-                updateLastKnowLocation();
+                //updateLastKnowLocation();
             }
             else{
                 getLocationPermission();

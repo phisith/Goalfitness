@@ -12,6 +12,8 @@
         android:layout_margin="20dp"
         android:orientation="vertical">
 
+
+
     <EditText
             android:id="@+id/Email"
             android:inputType="textEmailAddress"

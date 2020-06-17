@@ -2,4 +2,5 @@
 <resources>
     <item name="chat_btn" type="id" />
     <item name="profile_btn" type="id" />
+    <item name="usernameDM" type="id" />
 </resources>

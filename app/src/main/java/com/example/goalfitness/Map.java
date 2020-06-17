@@ -1,10 +1,6 @@
 package com.example.goalfitness;
 
-import android.Manifest;
-import android.app.Activity;
-import android.content.pm.PackageManager;
 import android.location.Location;
-import android.location.LocationManager;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,35 +8,33 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentPagerAdapter;
+import androidx.viewpager.widget.ViewPager;
 
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.api.GoogleApi;
+import com.example.goalfitness.Fragments.MapView;
 import com.google.android.gms.common.api.internal.ConnectionCallbacks;
-import com.google.android.gms.common.api.internal.OnConnectionFailedListener;
 import com.google.android.gms.location.FusedLocationProviderClient;
-import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
-import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.maps.CameraUpdate;
-import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.internal.IGoogleMapDelegate;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.material.tabs.TabLayout;
+
+import java.util.ArrayList;
 
 import static com.example.goalfitness.Constants.MAPVIEW_BUNDLE_KEY;
 
 public class Map extends Fragment implements OnMapReadyCallback{
 
-    private MapView mMapView;
+    private com.google.android.gms.maps.MapView mMapView;
     ConnectionCallbacks mConnectionCallback;
     Location LastLocation;
     LocationRequest mLocationRequest;
     FusedLocationProviderClient mFusedLocationProvider;
+
 
 
     @Nullable
@@ -52,14 +46,14 @@ public class Map extends Fragment implements OnMapReadyCallback{
         if (savedInstanceState != null) {
             mapViewBundle = savedInstanceState.getBundle(MAPVIEW_BUNDLE_KEY);
         }
-        mMapView = (MapView) view.findViewById(R.id.user_list_map);
+        mMapView = (com.google.android.gms.maps.MapView) view.findViewById(R.id.user_list_map);
         mMapView.onCreate(mapViewBundle);
 
         mMapView.getMapAsync(this);
         return view;
 
-    }
 
+    }
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
@@ -73,6 +67,8 @@ public class Map extends Fragment implements OnMapReadyCallback{
 
         mMapView.onSaveInstanceState(mapViewBundle);
     }
+
+
 
     @Override
     public void onResume() {
@@ -96,10 +92,6 @@ public class Map extends Fragment implements OnMapReadyCallback{
     public void onMapReady(GoogleMap map) {
         map.addMarker(new MarkerOptions().position(new LatLng(0,0)).title("Marker"));
         map.setMyLocationEnabled(true);
-
-
-
-
     }
 
     @Override
@@ -119,6 +111,9 @@ public class Map extends Fragment implements OnMapReadyCallback{
         super.onLowMemory();
         mMapView.onLowMemory();
     }
+
+
+
 
 }
 
