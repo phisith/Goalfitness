@@ -73,7 +73,6 @@ public class MainActivity extends AppCompatActivity {
         btnCustomer = (Button)findViewById(R.id.Customer);
         btnPt = (Button)findViewById(R.id.Pt);
         rootLayout = (RelativeLayout) findViewById(R.id.rootLayout);
-        video = (Button) findViewById(R.id.vdo);
 
         btnCustomer.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -88,12 +87,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        video.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                openvdo();
-            }
-        });
+
 
         mFusedLocationProvider = LocationServices.getFusedLocationProviderClient(this);
 
@@ -103,10 +97,6 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    private void openvdo() {
-        Intent intent = new Intent(this, TodoActivity.class);
-        startActivity(intent);
-    }
 
 
     // check permission for the Map services

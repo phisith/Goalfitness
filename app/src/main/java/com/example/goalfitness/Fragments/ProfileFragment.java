@@ -80,7 +80,7 @@ public class ProfileFragment extends Fragment {
         edit_profile = view.findViewById(R.id.edit_profile);
         username = view.findViewById(R.id.username);
         my_fotos = view.findViewById(R.id.my_fotos);
-        options = view.findViewById(R.id.options);
+
 
         recyclerView = view.findViewById(R.id.recycler_view);
         recyclerView.setHasFixedSize(true);

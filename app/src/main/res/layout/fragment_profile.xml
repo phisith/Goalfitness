@@ -31,13 +31,6 @@
                     android:textStyle="bold"
                     android:id="@+id/username"/>
 
-                <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/options"
-                    android:src="@drawable/ic_options"
-                    android:layout_alignParentEnd="true"
-                    android:layout_marginEnd="10dp"/>
 
             </RelativeLayout>
 
@@ -82,16 +75,17 @@
                         <LinearLayout
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:layout_marginLeft="60dp"
                             android:orientation="vertical">
 
                             <TextView
+                                android:id="@+id/posts"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:id="@+id/posts"
-                                android:textColor="@color/colorPrimaryDark"
                                 android:layout_gravity="center"
+                                android:textColor="@color/colorPrimaryDark"
                                 android:textSize="18sp"
-                                android:textStyle="bold"/>
+                                android:textStyle="bold" />
 
                             <TextView
                                 android:layout_width="wrap_content"
@@ -115,10 +109,7 @@
                                 android:textSize="18sp"
                                 android:textStyle="bold"/>
 
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="followers"/>
+
 
                         </LinearLayout>
 
@@ -137,10 +128,7 @@
                                 android:id="@+id/following"
                                 android:textStyle="bold"/>
 
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="following"/>
+
 
                         </LinearLayout>
 
@@ -151,7 +139,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="8dp"
                         android:id="@+id/edit_profile"
-                        android:background="@drawable/common_google_signin_btn_icon_disabled"/>
+                        android:background="@color/quantum_white_100"/>
 
                 </LinearLayout>
 
@@ -192,7 +180,7 @@
                 android:layout_marginLeft="-5dp"
                 android:layout_marginRight="-5dp"
                 android:id="@+id/last_bar"
-                android:background="@drawable/common_google_signin_btn_icon_light"
+                android:background="@color/quantum_white_100"
                 android:orientation="horizontal">
 
                 <ImageButton
@@ -203,13 +191,6 @@
                     style="?android:attr/buttonBarButtonStyle"
                     android:layout_height="wrap_content" />
 
-                <ImageButton
-                    android:layout_width="0dp"
-                    android:layout_weight="1"
-                    android:id="@+id/saved_fotos"
-                    android:src="@drawable/ic_bookmark_border_black_24dp"
-                    android:layout_height="wrap_content"
-                    style="?android:attr/buttonBarButtonStyle"/>
 
             </LinearLayout>
 
