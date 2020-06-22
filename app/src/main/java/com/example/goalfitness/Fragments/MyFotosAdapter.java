@@ -45,17 +45,17 @@ public class MyFotosAdapter extends RecyclerView.Adapter<MyFotosAdapter.ImageVie
 
         Glide.with(mContext).load(post.getPostimage()).into(holder.post_image);
 
-//        holder.post_image.setOnClickListener(new View.OnClickListener() {
- //           @Override
-  //          public void onClick(View view) {
-  //              SharedPreferences.Editor editor = mContext.getSharedPreferences("PREFS", MODE_PRIVATE).edit();
-  //              editor.putString("postid", post.getPostid());
-   //             editor.apply();
-//
-   //             ((FragmentActivity)mContext).getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
-  //                      new PostDetailFragment()).commit();
-  //          }
-  //      });
+        holder.post_image.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                SharedPreferences.Editor editor = mContext.getSharedPreferences("PREFS", MODE_PRIVATE).edit();
+               editor.putString("postid", post.getPostid());
+                editor.apply();
+
+                ((FragmentActivity)mContext).getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
+                        new PostDetailFragment()).commit();
+            }
+        });
 
     }
 

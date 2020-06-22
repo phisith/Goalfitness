@@ -122,7 +122,7 @@ public class MessageActivity extends AppCompatActivity {
         } else{
             Log.i("TAG",id);
         }
-        ref = FirebaseDatabase.getInstance().getReference().child("Users").child("Customers").child(id);
+        ref = FirebaseDatabase.getInstance().getReference().child("Users").child("Personal trainer").child(id);
 
 
         ref.addValueEventListener(new ValueEventListener() {
