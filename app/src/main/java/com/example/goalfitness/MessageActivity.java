@@ -159,8 +159,8 @@ public class MessageActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()){
 
-            case R.id.todolist:
-                startActivity(new Intent(getApplicationContext(), TodoActivity.class).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK).putExtra("id", id));
+            case R.id.vdo:
+                startActivity(new Intent(this, VideoCallActivity.class));
                 return true;
 
             case R.id.btn_paypal:

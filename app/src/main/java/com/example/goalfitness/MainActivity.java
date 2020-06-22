@@ -297,7 +297,7 @@ public class MainActivity extends AppCompatActivity {
                 Auth.signInWithEmailAndPassword(Email,Password).addOnSuccessListener(new OnSuccessListener<AuthResult>() {
                     @Override
                     public void onSuccess(AuthResult authResult) {
-                        startActivity(new Intent(MainActivity.this, Profile_PT.class));
+                        startActivity(new Intent(MainActivity.this, StartPT.class));
                         finish();
                     }
                 });

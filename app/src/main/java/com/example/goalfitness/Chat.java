@@ -81,7 +81,7 @@ public class Chat extends AppCompatActivity {
 
         private void chatList() {
                 customer_registers = new ArrayList<>();
-                ref = FirebaseDatabase.getInstance().getReference().child("Users").child("Personal trainer");
+                ref = FirebaseDatabase.getInstance().getReference().child("Users").child("Customers");
                 ref.addValueEventListener(new ValueEventListener() {
                         @Override
                         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {

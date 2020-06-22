@@ -8,8 +8,8 @@
         app:showAsAction="ifRoom"/>
 
     <item
-        android:id="@+id/todolist"
-        android:icon="@drawable/ic_list_black_24dp"
+        android:id="@+id/vdo"
+        android:icon="@drawable/ic_videocam_black_24dp"
         android:title="todolist"
         app:showAsAction="ifRoom"/>
 

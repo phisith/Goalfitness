@@ -15,6 +15,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.goalfitness.Fragments.ProfileFragment;
 import com.example.goalfitness.R;
 import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -57,7 +58,7 @@ public class uploadpost extends AppCompatActivity {
         close.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(uploadpost.this, Profile_PT.class));
+                startActivity(new Intent(uploadpost.this, ProfileFragment.class));
                 finish();
             }
         });
@@ -119,7 +120,7 @@ public class uploadpost extends AppCompatActivity {
 
                         pd.dismiss();
 
-                        startActivity(new Intent(uploadpost.this, Profile_PT.class));
+                        startActivity(new Intent(uploadpost.this, StartPT.class));
                         finish();
 
                     } else {
@@ -150,7 +151,7 @@ public class uploadpost extends AppCompatActivity {
             image_added.setImageURI(mImageUri);
         } else {
             Toast.makeText(this, "Something gone wrong!", Toast.LENGTH_SHORT).show();
-            startActivity(new Intent(uploadpost.this, Profile_PT.class));
+            startActivity(new Intent(uploadpost.this, ProfileFragment.class));
             finish();
         }
     }

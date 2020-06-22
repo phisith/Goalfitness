@@ -37,14 +37,14 @@
         <activity android:name=".PaymentDetails" />
         <activity android:name=".Paypal" />
         <activity android:name=".EditProfileActivity" />
+        <activity android:name=".EditProfileActivity2" />
         <activity android:name=".CommentsActivity" />
         <activity android:name=".VideoCallActivity" />
         <activity android:name=".MessageActivity" />
         <activity android:name=".Start" />
+        <activity android:name=".StartPT" />
         <activity android:name=".Fragments.UsersView" />
         <activity android:name=".Chat" />
-        <activity android:name=".Profile" />
-        <activity android:name=".Profile_PT" />
         <activity android:name=".uploadpost" />
         <activity android:name="com.theartofdev.edmodo.cropper.CropImageActivity" />
         <activity android:name=".Fragments.ProfileFragment" />

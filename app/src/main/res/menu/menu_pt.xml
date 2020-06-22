@@ -8,6 +8,12 @@
         android:title="@string/uploadpost"
         app:showAsAction="ifRoom"/>
 
+    <item
+        android:id="@+id/chat_btn"
+        android:icon="@drawable/ic_chat_black_24dp"
+        android:title="@string/chat"
+        app:showAsAction="ifRoom"/>
+
 
 
 </menu>
